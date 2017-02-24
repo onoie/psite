@@ -2,13 +2,15 @@
 
 var debug = Number(false);
 var id = "psite";
-var version = "v1.0.0";
-var src_path;
+var version = "v1.1";
 var conf;
+var max_height;
+var max_width;
 var root;
 var res_text;
 var resizeTimer;
 var render_cnt;
+
 window.addEventListener('resize', function (event) {
 	if (resizeTimer !== false) {
 		clearTimeout(resizeTimer);
@@ -17,51 +19,7 @@ window.addEventListener('resize', function (event) {
 		render();
 	},Math.floor(1000 / 60 * 10));
 });
-window.onload=function(){
-	if (!document.createElement) return;
-	root=document.getElementById(id);
-	if(root==null){
-		//CreateRootElement
-		root=document.createElement("div");
-		root.id=id;
-		document.body.appendChild(root);
-	}
-	root.style.overflow="hidden";
-	//GetArgument
-	var scripts=document.getElementsByTagName("script");
-	var src=scripts[scripts.length-1].src;
-	src_path=src.substring(0,src.indexOf('?'));
-	var query =src.substring(src.indexOf('?')+1);
-	var parameters=query.split('&');
-	var result={};
-	for(var i=0;i<parameters.length;i++){
-		var element=parameters[i].split('=');
-		result[decodeURIComponent(element[0])]=decodeURIComponent(element[1]);
-	}
-	conf=result['conf'];
-	//ReadPropertiesFile
-	var xmlHttp;
-	if (window.XMLHttpRequest){
-		xmlHttp=new XMLHttpRequest();
-	}else{
-		if (window.ActiveXObject){
-			xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
-		}else{
-			xmlHttp=null;
-		}
-	}
-	xmlHttp.onreadystatechange=checkStatus;
-	xmlHttp.open("GET",conf, true);
-	xmlHttp.send(null);
-	function checkStatus(){
-		if (xmlHttp.readyState==4 && xmlHttp.status==200){
-			res_text=xmlHttp.responseText;
-			render();
-		}else{
-			root.innerText="StatusCode:"+xmlHttp.status;
-		}
-	}
-};
+
 function initialize(){
 	root.innerText="";
 	root.style.cssText="";
@@ -153,19 +111,19 @@ function render() {
 		}
 	}
 	footer();
-	// adddiv("RenderObjectCount:"+render_cnt);
+	//adddiv("RenderObjectCount:"+render_cnt);
 }
 function pswitch(key,val,hash_flg){
 	if(/^img/.test(key)){
 		//Image
 		render_cnt++;
 		var alink = document.createElement('a');
+		alink.style.cssText+="display:inline-block;";
 		//alink.href=url_dir()+url_file()+"#"+key;
 		log(fill("img",alink.href));
 		var img = document.createElement('img');
 		img.setAttribute("alt",key);
 		img.setAttribute("src",val);
-		img.style.cssText+="display:inline-block;";
 		if(hash_flg){
 			//ShowSingleFile
 			if(hash_flg && /^imgs/.test(key) && (/.+s\..+/.test(val))){
@@ -178,7 +136,7 @@ function pswitch(key,val,hash_flg){
 			root.style.cssText+="text-align:center;";
 		}else{
 			//ShowIndex
-			img.style.cssText+="cursor:pointer;max-height:128px;";
+			img.style.cssText+="cursor:pointer;"+(max_width?"max-width:"+max_width+"px;":"")+(max_height?"max-height:"+max_height+"px;":"");
 			img.onclick=function(){
 				location.href=url_dir()+url_file()+"#"+key;
 				initialize();
@@ -201,15 +159,58 @@ function index(){
 	root.appendChild(document.createElement("br"));
 }
 function header() {
-	adddiv('<div id="header" style="font-size:80%;text-align:left;color:gray;">'+new Date().toLocaleString()+',src=<a style="color:gray;text-decoration:none;" href="'+src_path+'">'+src_path+'</a>,conf=<a style="color:gray;text-decoration:none;" href="'+conf+'">'+conf+'</a></div>');
 	hr()
 }
 function footer(){
 	hr();
-	adddiv('<div id="footer" style="font-size:80%;text-align:right;color:gray;">'+'&copy; Copyright 2015-'+new Date().getFullYear()+' <a href="https://twitter.com/ymst180" style="color:gray!important;">@ymst180</a> '+'Powered by psite '+version+'</a> via <a href="https://github.com/TransAssist" style="color:gray!important;">TransAssist</a>'+'</div>');
+	adddiv('<div id="footer" style="font-size:80%;text-align:right;color:gray;">'+'Powered by psite.<a href="'+conf+'" style="color:gray!important;">conf</a>'+' '+version+'</a> from <a href="https://github.com/TransAssist" style="color:gray!important;">TransAssist</a>'+'</div>');
 }
 function hr(){
 	var hr =document.createElement('hr');
 	hr.style.margin="0";
 	root.appendChild(hr);
+}
+
+//CreateRootElement
+root=document.createElement("div");
+root.id=id;
+document.body.appendChild(root);
+root=document.getElementById(id);
+if(root!=null){
+	root.style.overflow="hidden";
+	//GetArgument
+	var scripts=document.getElementsByTagName("script");
+	var src=scripts[scripts.length-1].src;
+	var query =src.substring(src.indexOf('?')+1);
+	var parameters=query.split('&');
+	var result={};
+	for(var i=0;i<parameters.length;i++){
+		var element=parameters[i].split('=');
+		result[decodeURIComponent(element[0])]=decodeURIComponent(element[1]);
+	}
+	conf=result['conf'];
+	max_height=result['max-height'];
+	max_width=result['max-width'];
+	//ReadPropertiesFile
+	var xmlHttp;
+	if (window.XMLHttpRequest){
+		xmlHttp=new XMLHttpRequest();
+	}else{
+		if (window.ActiveXObject){
+			xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}else{
+			xmlHttp=null;
+		}
+	}
+	xmlHttp.onreadystatechange=checkStatus;
+	xmlHttp.open("GET",conf, true);
+	xmlHttp.send(null);
+	function checkStatus(){
+		if (xmlHttp.readyState==4 && xmlHttp.status==200){
+			res_text=xmlHttp.responseText;
+			render();
+		}else{
+			root.innerText="StatusCode:"+xmlHttp.status;
+		}
+	}
 }
