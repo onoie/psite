@@ -153,7 +153,7 @@ function render() {
 		}
 	}
 	footer();
-	adddiv("RenderObjectCount:"+render_cnt);
+	// adddiv("RenderObjectCount:"+render_cnt);
 }
 function pswitch(key,val,hash_flg){
 	if(/^img/.test(key)){
