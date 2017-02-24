@@ -172,9 +172,6 @@ function hr(){
 }
 
 //CreateRootElement
-root=document.createElement("div");
-root.id=id;
-document.body.appendChild(root);
 root=document.getElementById(id);
 if(root!=null){
 	root.style.overflow="hidden";
