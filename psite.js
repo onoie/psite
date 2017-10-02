@@ -163,7 +163,7 @@ function header() {
 }
 function footer(){
 	hr();
-	adddiv('<div id="footer" style="font-size:80%;text-align:right;color:gray;">'+'Powered by psite.<a href="'+conf+'" style="color:gray!important;">conf</a>'+' '+version+'</a> from <a href="https://github.com/TransAssist" style="color:gray!important;">TransAssist</a>'+'</div>');
+	adddiv('<div id="footer" style="font-size:80%;text-align:right;color:gray;">'+'Powered by psite.<a href="'+conf+'" style="color:gray!important;">conf</a>'+' '+version+'</a> from <a href="https://github.com/onoie" style="color:gray!important;">Onoie</a>'+'</div>');
 }
 function hr(){
 	var hr =document.createElement('hr');
